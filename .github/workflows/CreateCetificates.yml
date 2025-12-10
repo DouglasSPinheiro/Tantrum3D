@@ -35,7 +35,8 @@ jobs:
       run: set ${{env.thumb}}=(Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object {$_.Subject -match "CN=${{github.event.inputs.CN}}"}).thumbprint
     
     - name: GeneratePassword
-      run: set ${{env.password}} = ConvertTo-SecureString -String ${{github.events.inputs.PfxPassword}} -Force -AsPlainText 
+      run: echo ${{github.events.inputs.PfxPassword}} 
+      #run: set ${{env.password}} = ConvertTo-SecureString -String ${{github.events.inputs.PfxPassword}} -Force -AsPlainText 
 
     - name: ExportPfx
       run: Export-PfxCertificate -cert "Cert:\CurrentUser\My\<Certificate Thumbprint>" -FilePath cert.pfx -Password ${{env.password}}
