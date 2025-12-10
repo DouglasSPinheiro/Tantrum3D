@@ -15,7 +15,6 @@ on:
         default: 'latest'
       PfxPassword:
         description: 'PFX Password'
-        type: string
         required: true
       FriendlyName:
         description: 'Perform a dry run?'
