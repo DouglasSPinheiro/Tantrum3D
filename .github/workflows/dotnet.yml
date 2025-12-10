@@ -1,0 +1,51 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Build .NET MAUI App (CI)
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'
+        required: false
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'development'
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Decrpypt PFX file
+      run: |
+        echo "${{secrets.WINDOWS_PFX_CERT}}" > cert.pfx.asc
+        certutil -decode cert.pfx.asc cert.pfx
+    - name:  Add cert to Store
+      run: certutil -user -q -p ${{secrets.WINDOWS_PFX_PASSWORD}} -importpfx cert.pfx NoRoot
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with: 
+        dotnet-version: 9.0.x
+    - name: Install .NET MAUI
+      run: dotnet workload install maui
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet dotnet build Tantrum3D.csproj -c Release -f:net9.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint="${{secrets.WINDOWS_PFX_THUMBPRINT}}"
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v5.0.0
+      with:
+        path: .\**\bin\**\*.*
+        
