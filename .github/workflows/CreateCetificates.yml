@@ -15,6 +15,7 @@ on:
         default: 'latest'
       password:
         description: 'PFX Password'
+        type: string
         required: true
       FriendlyName:
         description: 'Friendly Name'
