@@ -36,7 +36,9 @@ jobs:
     
     - name: GeneratePassword
       #run: echo "valor é  ${{github.event.inputs.password }}" 
-      run: set ${{env.password}} = ConvertTo-SecureString -String "password" -Force -AsPlainText 
+      # $Encrypted = ConvertFrom-SecureString -SecureString $Secure
+      #run: set ${{env.password}} = ConvertTo-SecureString -String "password" -Force -AsPlainText 
+      run: set ${{env.password}} = {{github.event.input.password}} -AsSecureString
 
     - name: ExportPfx
       run: Export-PfxCertificate -cert "Cert:\CurrentUser\My\<Certificate Thumbprint>" -FilePath cert.pfx -Password ${{env.password}}
